@@ -1,0 +1,6 @@
+docker/mysql/data/
+docker-compose.override.yml
+
+/public/build
+
+.DS_Store
