@@ -13,6 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [App\Http\Controllers\ReservationController::class, 'index'])->name('index');
+
+Route::get('/excelImport', [App\Http\Controllers\ReservationController::class, 'excelImport'])->name('excelImport');
