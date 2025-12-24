@@ -13,7 +13,7 @@
 <body>
     <header class="header">
         <div class="header-utilities">
-            <div class="header__logo">
+            <div class="header__title">
                 <a href="/">予約状況管理アプリ</a>
             </div>
 
