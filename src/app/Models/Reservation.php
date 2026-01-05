@@ -11,7 +11,7 @@ class Reservation extends Model
     use HasFactory;
 
     protected $fillable = [
-        'import_date',
+        'import_at',
         'visit_date',
         'patient_id',
         'patient_name',

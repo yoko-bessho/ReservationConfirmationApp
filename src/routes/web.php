@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ReservationController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -15,4 +17,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [App\Http\Controllers\ReservationController::class, 'index'])->name('index');
 
-Route::get('/excelImport', [App\Http\Controllers\ReservationController::class, 'excelImport'])->name('excelImport');
+Route::get('/import', [ReservationController::class, 'showImportForm'])->name('importForm');
+Route::post('/import', [ReservationController::class, 'import'])->name('import');
+
+
