@@ -20,7 +20,7 @@
             <div class="header-nav">
                 <ul>
                     <li class="header-nav__item">
-                        <a class="header-nav__link" href="{{ route('excelImport') }}">Excelインポート</a>
+                        <a class="header-nav__link" href="{{ route('import') }}">Excelインポート</a>
                     </li>
                     <li class="header-nav__item">
                         <a class="header-nav__link" href="{{ route('index') }}">予約状況確認</a>

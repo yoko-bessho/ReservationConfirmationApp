@@ -7,6 +7,7 @@ use App\Http\Requests\ImportReservationRequest;
 use App\Services\ImportService;
 use App\Imports\ReservationImport;
 use Maatwebsite\Excel\Facades\Excel;
+
 class ReservationController extends Controller
 {
     public function showImportForm()
@@ -14,17 +15,27 @@ class ReservationController extends Controller
         return view('excel_import');
     }
 
-    public function import(Request $request)
+
+    public function import(importReservationRequest $request)
     {
         $file = $request->file('file');
 
-        Excel::import(
-            new ReservationImport(app(ImportService::class)),
-            $file
-        );
-
+        try {
+            Excel::import(new ReservationImport,$file);
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $importErrors = [];
+            $failures = $e->failures();
+            foreach ($failures as $failure) {
+                $importErrors[] = [
+                    'row'       => $failure->row(),
+                    'attribute' => $failure->attribute(),
+                    'errors'    => $failure->errors(),
+                    'values'    => $failure->values(),
+                ];
+            }
+            return back()->with('importErrors', $importErrors);
+        }
+        
         return back()->with('success', 'インポート完了');
-
     }
-
 }

@@ -12,14 +12,27 @@
         </div>
     @endif
 
-    @if (session('error'))
+    @if ($errors->any())
         <div class="alert alert-danger">
-            {{ session('error') }}
-            <ol class="error-list">
+            <ul class="error-list">
                 @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
+                    <li>{{ $error }}</li>
                 @endforeach
-            </ol>
+            </ul>
+        </div>
+    @endif
+
+    @if (session()->exists('importErrors'))
+        <div class="alert alert-danger">
+            <ul class="error-list">
+                @foreach (session('importErrors', []) as $error)
+                <li>
+                    {{ $error['row'] }}行目 /
+                    {{ $error['attribute'] }} :
+                    {{ implode(', ', $error['errors']) }}
+                </li>
+                @endforeach
+            </ul>
         </div>
     @endif
     </div>

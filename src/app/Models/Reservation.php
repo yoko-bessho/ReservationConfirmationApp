@@ -19,7 +19,7 @@ class Reservation extends Model
     ];
 
     protected $casts = [
-        'import_date' => 'date',
+        'import_at' => 'datetime',
         'visit_date' => 'date',
     ];
 
