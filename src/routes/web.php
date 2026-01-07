@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\DiffHistoryController;
 
 
 /*
@@ -15,7 +16,7 @@ use App\Http\Controllers\ReservationController;
 |
 */
 
-Route::get('/', [App\Http\Controllers\ReservationController::class, 'index'])->name('index');
+Route::get('/', [DiffHistoryController::class, 'index'])->name('index');
 
 Route::get('/import', [ReservationController::class, 'showImportForm'])->name('importForm');
 Route::post('/import', [ReservationController::class, 'import'])->name('import');
