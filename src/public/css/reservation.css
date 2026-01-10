@@ -1,4 +1,5 @@
 .reservation-list {
+    width: 60%;
     background-color: white;
     border-color: #000;
     border-radius: 8px;
@@ -8,6 +9,4 @@
 
 .table {
     width: 100%;
-    border-collapse: collapse;
-
 }
