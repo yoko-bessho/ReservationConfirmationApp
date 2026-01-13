@@ -34,8 +34,6 @@
 
 .container {
     max-width: 100vw;
-    /* display: flex;
-    justify-content: space-between; */
     margin: 0 auto;
     background: white;
     padding: 30px;

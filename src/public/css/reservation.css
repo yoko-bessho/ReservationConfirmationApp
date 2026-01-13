@@ -1,5 +1,20 @@
-.reservation-list {
+.container {
+    width: 100vw;
+    margin: 0 auto;
+    padding: 0 30px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.reservation-info {
     width: 60%;
+    margin: 0 auto;
+    padding: 30px;
+}
+
+.reservation-list {
+    width: 100%;
+    padding: 20px;
     background-color: white;
     border-color: #000;
     border-radius: 8px;
@@ -9,4 +24,12 @@
 
 .table {
     width: 100%;
+}
+
+.reservation-difference {
+    width: 40%;
+}
+
+.highlight-added {
+    background-color: #d4edda;
 }
