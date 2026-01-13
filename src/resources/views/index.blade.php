@@ -7,7 +7,7 @@
 @section('content')
 <div class="container">
     <div class="reservation-info">
-        <H2>最終インポート日時</H2>
+        <H2>最新インポート日時</H2>
 
         @if ($latestImportAt)
         <p>{{ \Carbon\Carbon::parse($latestImportAt)->format('Y年m月d日 H:i') }}</p>
@@ -45,7 +45,7 @@
 
     <div class="reservation-difference">
         <div class="diff-form">
-            <h3>差分チェック</h3>
+            <h3>予約追加確認はこちら</h3>
 
             <p>
                 最新：
@@ -67,7 +67,7 @@
                     </select>
                 </div>
 
-                <button type="submit">差分チェック</button>
+                <button type="submit">予約追加状況チェック</button>
             </form>
         </div>
 

@@ -20,32 +20,40 @@ class Reservation extends Model
 
     protected $casts = [
         'import_at' => 'datetime',
+        'previous_import_at' => 'date',
+        'current_import_date' => 'date',
         'visit_date' => 'date',
     ];
 
-    // 任意のインポート日のデータ取得
-    public static function getByImportDate(string $importDate)
+    public static function getLatestImportData()
     {
-        return self::where('import_date', $importDate)->get();
+        $latestImportAt = Reservation::max('import_at');
+        $latestImportData = Reservation::where('import_at', $latestImportAt)->get();
+
+        return [
+            'import_at' => $latestImportAt,
+            'reservations' => $latestImportData,
+        ];
     }
 
-    // 最新のインポート日を取得
-    public static function getLatestImportDate(): ?string
-    {
-        return self::max('import_date');
-    }
 
-    // 指定した日付より前の最新のインポート日を取得
-    public static function getPreviousImportDate(): ?string
+    public static function getPreviousImportData()
     {
-        $latestDate = self::getLatestImportDate();
-        
-        if (!$latestDate) {
+        $latestImportAt = Reservation::max('import_at');
+
+        if (!$latestImportAt) {
             return null;
         }
-        
-        return self::where('import_date', '<', $latestDate)
-            ->max('import_date');
-    }
+        // デフォルトではlatest_atの直前のimport_atを取得
+        $previousImportAt = Reservation::where('import_at', '<', $latestImportAt)->max('import_at');
 
+        if (!$previousImportAt) {
+            return null;
+        }
+
+        return [
+            'import_at' => $previousImportAt,
+            'reservations' => Reservation::where('import_at', $previousImportAt)->get(),
+        ];
+    }
 }

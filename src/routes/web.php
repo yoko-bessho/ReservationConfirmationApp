@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\DiffHistoryController;
-
+use App\Models\Reservation;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,12 +16,12 @@ use App\Http\Controllers\DiffHistoryController;
 |
 */
 
-Route::get('/', [DiffHistoryController::class, 'index'])->name('index');
-Route::get('/diff/check', [DiffHistoryController::class, 'check'])
-    ->name('diff.check');
 
 
 Route::get('/import', [ReservationController::class, 'showImportForm'])->name('importForm');
 Route::post('/import', [ReservationController::class, 'import'])->name('import');
 
+Route::get('/', [ReservationController::class, 'index'])->name('index');
+Route::get('/diff/check', [ReservationController::class, 'check'])
+    ->name('diff.check');
 
