@@ -20,40 +20,22 @@ class Reservation extends Model
 
     protected $casts = [
         'import_at' => 'datetime',
-        'previous_import_at' => 'date',
-        'current_import_date' => 'date',
         'visit_date' => 'date',
     ];
 
-    public static function getLatestImportData()
-    {
-        $latestImportAt = Reservation::max('import_at');
-        $latestImportData = Reservation::where('import_at', $latestImportAt)->get();
 
-        return [
-            'import_at' => $latestImportAt,
-            'reservations' => $latestImportData,
-        ];
+
+    public static function getLatestImportAt(): ?string
+    {
+        return self::max('import_at');
     }
 
 
-    public static function getPreviousImportData()
+    public static function getPreviousImportAt(): ?string
     {
-        $latestImportAt = Reservation::max('import_at');
+        $latest = self::getLatestImportAt();
 
-        if (!$latestImportAt) {
-            return null;
-        }
-        // デフォルトではlatest_atの直前のimport_atを取得
-        $previousImportAt = Reservation::where('import_at', '<', $latestImportAt)->max('import_at');
-
-        if (!$previousImportAt) {
-            return null;
-        }
-
-        return [
-            'import_at' => $previousImportAt,
-            'reservations' => Reservation::where('import_at', $previousImportAt)->get(),
-        ];
+        return self::where('import_at', '<', $latest)->max('import_at');
     }
+
 }
