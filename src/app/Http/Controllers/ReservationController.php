@@ -44,13 +44,14 @@ class ReservationController extends Controller
     public function index(ReservationDiffService $diffService)
     {
         $latestImportAt = Reservation::getLatestImportAt();
-
         $previousImportAt = Reservation::getPreviousImportAt();
 
         if (!$latestImportAt || !$previousImportAt) {
             return view('index', [
                 'latestImportAt' => $latestImportAt,
+                'previousImportAt' => $previousImportAt,
                 'latestReservations' => collect(),
+                'previousReservations' => collect(),
                 'addedDiffs' => collect(),
                 'deletedDiffs' => collect(),
             ]);
@@ -62,45 +63,49 @@ class ReservationController extends Controller
         $result = $diffService->calculate(
             $latestReservations,
             $previousReservations,
-            $latestImportAt,
-            $previousImportAt
         );
 
+        // インポート日時選択肢用
         $importDates = Reservation::select('import_at')
             ->distinct()
             ->orderBy('import_at', 'desc')
             ->pluck('import_at');
 
         return view('index', array_merge($result, [
+            'latestImportAt' => $latestImportAt,
+            'previousImportAt' => $previousImportAt,
+            'latestReservations' => $latestReservations,
             'importDates' => $importDates,
         ]));
     }
 
 
-        public function check(Request $request, ReservationDiffService $diffService)
-        {
-            $latestImportAt = Reservation::getLatestImportAt();
-            $previousImportAt = $request->input('from_import_at');
+    public function check(Request $request, ReservationDiffService $diffService)
+    {
+        $latestImportAt = Reservation::getLatestImportAt();
+        $previousImportAt = $request->input('from_import_at');
 
-            $latestReservations = Reservation::where('import_at', $latestImportAt)->get();
-            $previousReservations = Reservation::where('import_at', $previousImportAt)->get();
+        $latestReservations = Reservation::where('import_at', $latestImportAt)->get();
+        $previousReservations = Reservation::where('import_at', $previousImportAt)->get();
 
-            $result = $diffService->calculate(
-                $latestReservations,
-                $previousReservations,
-                $latestImportAt,
-                $previousImportAt
-            );
-
-            $importDates = Reservation::where('import_at', '<', $latestImportAt)
-                ->distinct()
-                ->orderBy('import_at', 'desc')
-                ->pluck('import_at');
+        $result = $diffService->calculate(
+            $latestReservations,
+            $previousReservations,
+            $latestImportAt,
+            $previousImportAt
+        );
+        $importDates = Reservation::where('import_at', '<', $latestImportAt)
+            ->distinct()
+            ->orderBy('import_at', 'desc')
+            ->pluck('import_at');
 
             return view('index', array_merge($result, [
-                'importDates'      => $importDates,
-            ]));
-        }
+            'importDates'      => $importDates,
+            'latestImportAt' => $latestImportAt,
+            'latestReservations' => $latestReservations,
+            'previousImportAt' => $previousImportAt,
+        ]));
+    }
 
 
 }

@@ -12,18 +12,13 @@ class ReservationDiffService
     public function calculate(
         Collection $latestReservations,
         Collection $previousReservations,
-        string $latestImportAt,
-        string $previousImportAt
     ): array {
         $latestKeyed = $this->keyByReservation($latestReservations);
         $previousKeyed = $this->keyByReservation($previousReservations);
 
         return [
-            'latestImportAt'     => $latestImportAt,
-            'previousImportAt'   => $previousImportAt,
-            'latestReservations' => $latestReservations,
-            'addedDiffs'         => $latestKeyed->diffKeys($previousKeyed),
-            'deletedDiffs'       => $previousKeyed->diffKeys($latestKeyed),
+            'addedDiffs' => $latestKeyed->diffKeys($previousKeyed),
+            'deletedDiffs' => $previousKeyed->diffKeys($latestKeyed),
         ];
     }
 
