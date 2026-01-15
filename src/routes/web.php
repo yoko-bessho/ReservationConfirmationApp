@@ -20,8 +20,7 @@ use App\Models\Reservation;
 
 Route::get('/import', [ReservationController::class, 'showImportForm'])->name('importForm');
 Route::post('/import', [ReservationController::class, 'import'])->name('import');
-
 Route::get('/', [ReservationController::class, 'index'])->name('index');
 Route::get('/diff/check', [ReservationController::class, 'check'])
     ->name('diff.check');
-
+Route::get('/export', [ReservationController::class, 'export'])->name('export');

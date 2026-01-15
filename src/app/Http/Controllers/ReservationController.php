@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\ImportReservationRequest;
 use App\Imports\ReservationImport;
+use App\Exports\ReservationExport;
 use App\Models\Reservation;
 use App\Services\ReservationDiffService;
 use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\Console\Input\Input;
 
 class ReservationController extends Controller
 {
@@ -94,6 +96,7 @@ class ReservationController extends Controller
             $latestImportAt,
             $previousImportAt
         );
+
         $importDates = Reservation::where('import_at', '<', $latestImportAt)
             ->distinct()
             ->orderBy('import_at', 'desc')
@@ -107,5 +110,30 @@ class ReservationController extends Controller
         ]));
     }
 
+    public function export(Request $request, ReservationDiffService $diffService)
+    {
+        $latestImportAt = Reservation::getLatestImportAt();
+        
+        $previousImportAt = Reservation::getPreviousImportAt();
 
+        if ($request->input('from_import_at')) {
+            $previousImportAt = $request->input('from_import_at');
+        }
+
+        $latestReservations = Reservation::where('import_at', $latestImportAt)->get();
+        $previousReservations = Reservation::where('import_at', $previousImportAt)->get();
+        $result = $diffService->calculate(
+            $latestReservations,
+            $previousReservations,
+        );
+
+        return Excel::download(
+            new ReservationExport(
+                'exports_reservations_diff', array_merge($result, [
+                    'latestReservations' => $latestReservations,
+                ])
+            ),
+            'reservations_diff.xlsx'
+        );
+    }
 }

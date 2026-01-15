@@ -40,11 +40,16 @@
                 @endforeach
             </table>
         </div>
+        <form method="GET" name="form_import_at" action="/export">
+            <input type="hidden" name="from_import_at" value="{{ $previousImportAt }}">
+            <button>エクスポート</button>
+        </form>
     </div>
 
 
     <div class="reservation-difference">
         <div class="diff-form">
+
             <h3>予約追加確認はこちら</h3>
 
             <p>
@@ -53,8 +58,9 @@
                     {{ \Carbon\Carbon::parse($latestImportAt)->format('Y/m/d H:i') }}
                 </strong>
             </p>
-        <p>
-        比較対象日： <strong>{{ $previousImportAt }}</strong></p>
+            <p>
+            比較対象日： <strong>{{ $previousImportAt }}</strong></p>
+
             <form method="GET" action="{{ route('diff.check') }}">
                 <div>
                     <label>比較対象日選択</label>
