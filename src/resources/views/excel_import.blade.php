@@ -49,8 +49,7 @@
 
     <form class="upload-area" action="{{ route('import') }}" method="POST" enctype="multipart/form-data" id="uploadForm">
         @csrf
-        <div>
-            <label for="file" class="btn btn-select">ファイルを選択</label>
+        <div class="file-input-wrapper">
             <input type="file" id="file" name="file" accept=".xlsx,.xls">
         </div>
         <div class="file-name" id="fileName"></div>

@@ -7,14 +7,15 @@
 @section('content')
 <div class="container">
     <div class="reservation-info">
-        <H2>最新インポート日時</H2>
-
+        <H2>最新インポート日時:　
         @if ($latestImportAt)
-        <p>{{ \Carbon\Carbon::parse($latestImportAt)->format('Y年m月d日 H:i') }}</p>
+        <span>{{ \Carbon\Carbon::parse($latestImportAt)->format('Y年m月d日') }}</span>
         @else
         <p>インポートされた予約はありません</p>
         @endif
-        <p>データ件数:  {{ $latestReservations->count() }} 件</p>
+        </H2>
+
+        <p class="count">データ件数:  {{ $latestReservations->count() }} 件</p>
 
         <div class="reservation-list">
             <h3>最新の予約一覧</h3>
@@ -42,7 +43,7 @@
         </div>
         <form method="GET" name="form_import_at" action="/export">
             <input type="hidden" name="from_import_at" value="{{ $previousImportAt }}">
-            <button>エクスポート</button>
+            <button class="btn btn-submit">エクスポート</button>
         </form>
     </div>
 
@@ -62,7 +63,7 @@
             比較対象日： <strong>{{ $previousImportAt }}</strong></p>
 
             <form method="GET" action="{{ route('diff.check') }}">
-                <div>
+                <div class="select-box">
                     <label>比較対象日選択</label>
                     <select name="from_import_at" required>
                         @foreach ($importDates as $date)
@@ -73,7 +74,7 @@
                     </select>
                 </div>
 
-                <button type="submit">予約追加状況チェック</button>
+                <button class="diff-btn" type="submit">予約追加状況チェック</button>
             </form>
         </div>
 

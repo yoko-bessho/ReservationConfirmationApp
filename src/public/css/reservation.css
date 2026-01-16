@@ -12,7 +12,15 @@
     padding: 30px;
 }
 
+.reservation-info h2 {
+    margin: 0;
+}
+
+.count {
+    margin: 0;
+}
 .reservation-list {
+    margin-bottom: 10px;
     width: 100%;
     padding: 20px;
     background-color: white;
@@ -32,4 +40,27 @@
 
 .highlight-added {
     background-color: #d4edda;
+}
+
+.diff-form {
+    margin-left: 30px;
+}
+.diff-btn {
+    padding: 10px 20px;
+    background-color: #3ca3f7;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.select-box {
+    margin-bottom: 15px;
+}
+
+.select-box select {
+    padding: 8px;
+    font-size: 16px;
 }
