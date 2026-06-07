@@ -5,6 +5,11 @@
 @endsection
 
 @section('content')
+
+<div id="app"></div>
+
+<script type="module" src="http://localhost:5173/resources/js/app.tsx"></script>
+
 <div class="container">
     <div class="reservation-info">
         <H2>最新インポート日時:　
