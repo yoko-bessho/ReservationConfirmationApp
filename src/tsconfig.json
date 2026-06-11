@@ -9,5 +9,7 @@
         "skipLibCheck": true,
         "noEmit": true
     },
-    "include": ["resources/js/**/*"]
+    "include": [
+        "resources/ts/**/*",
+        "resources/js/**/*"]
 }

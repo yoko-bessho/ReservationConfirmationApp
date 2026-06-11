@@ -17,7 +17,7 @@
     window.__vite_plugin_react_preamble_installed__ = true
 </script>
 <script type="module" src="http://localhost:5173/@vite/client"></script>
-<script type="module" src="http://localhost:5173/resources/js/app.tsx"></script>
+<script type="module" src="http://localhost:5173/resources/ts/App.tsx"></script>
 
 <div class="container">
     <div class="reservation-info">
