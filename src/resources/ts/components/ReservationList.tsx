@@ -24,7 +24,9 @@ function ReservationList({ rows }: Props) {
             </thead>
             <tbody>
                 {rows.map((row) => (
-                    <tr key={`${row.patientId}-${row.visitDate}`}>
+                    <tr
+                        key={`${row.patientId}-${row.visitDate}-${row.reservationContent}`}
+                    >
                         <td>{row.visitDate}</td>
                         <td>{row.patientId}</td>
                         <td>{row.patientName}</td>

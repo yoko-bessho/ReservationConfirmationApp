@@ -25,17 +25,18 @@ class Reservation extends Model
 
 
 
-    public static function getLatestImportAt(): ?string
+    public static function getLatestImportAt(): ?Carbon
     {
-        return self::max('import_at');
+        $value = self::max('import_at');
+        return $value ? Carbon::parse($value) : null;
     }
 
 
-    public static function getPreviousImportAt(): ?string
+    public static function getPreviousImportAt(): ?Carbon
     {
         $latest = self::getLatestImportAt();
-
-        return self::where('import_at', '<', $latest)->max('import_at');
+        $value = self::where('import_at', '<', $latest)->max('import_at');
+        return $value ? Carbon::parse($value) : null;
     }
 
 }

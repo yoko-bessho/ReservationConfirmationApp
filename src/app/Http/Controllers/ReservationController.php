@@ -73,12 +73,23 @@ class ReservationController extends Controller
             ->orderBy('import_at', 'desc')
             ->pluck('import_at');
 
-        return view('index', array_merge($result, [
-            'latestImportAt' => $latestImportAt,
-            'previousImportAt' => $previousImportAt,
-            'latestReservations' => $latestReservations,
-            'importDates' => $importDates,
-        ]));
+        // return view('index', array_merge($result, [
+        //     'latestImportAt' => $latestImportAt,
+        //     'previousImportAt' => $previousImportAt,
+        //     'latestReservations' => $latestReservations,
+        //     'importDates' => $importDates,
+        // ]));
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'データの取得に成功しました。',
+            'latestImportAt'     => $latestImportAt,
+            'previousImportAt'   => $previousImportAt,
+            'latestReservations' => $latestReservations->values(),
+            'importDates'        => $importDates->values(),
+            'addedDiffs'         => (object) $result['addedDiffs']->toArray(),
+            'deletedDiffs'       => (object) $result['deletedDiffs']->toArray(),
+        ], 200, [], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
 
 
@@ -93,8 +104,6 @@ class ReservationController extends Controller
         $result = $diffService->calculate(
             $latestReservations,
             $previousReservations,
-            $latestImportAt,
-            $previousImportAt
         );
 
         $importDates = Reservation::where('import_at', '<', $latestImportAt)

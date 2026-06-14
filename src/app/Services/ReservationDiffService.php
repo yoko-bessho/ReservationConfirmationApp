@@ -17,8 +17,8 @@ class ReservationDiffService
         $previousKeyed = $this->keyByReservation($previousReservations);
 
         return [
-            'addedDiffs' => $latestKeyed->diffKeys($previousKeyed),
-            'deletedDiffs' => $previousKeyed->diffKeys($latestKeyed),
+            'addedDiffs' => $latestKeyed->diffKeys($previousKeyed) ?? new \stdClass(), // 差分がない場合は空オブジェクトを返す(データ有無に関わらずobjectで統一するため)
+            'deletedDiffs' => $previousKeyed->diffKeys($latestKeyed) ?? new \stdClass(),
         ];
     }
 
