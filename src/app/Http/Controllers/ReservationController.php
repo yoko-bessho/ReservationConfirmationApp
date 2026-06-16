@@ -49,13 +49,13 @@ class ReservationController extends Controller
         $previousImportAt = Reservation::getPreviousImportAt();
 
         if (!$latestImportAt || !$previousImportAt) {
-            return view('index', [
-                'latestImportAt' => $latestImportAt,
-                'previousImportAt' => $previousImportAt,
-                'latestReservations' => collect(),
-                'previousReservations' => collect(),
-                'addedDiffs' => collect(),
-                'deletedDiffs' => collect(),
+            return response()->json([
+                'latestImportAt'     => null,
+                'previousImportAt'   => null,
+                'latestReservations' => [],
+                'importDates'        => [],
+                'addedDiffs'         => new \stdClass(),
+                'deletedDiffs'       => new \stdClass(),
             ]);
         }
 
@@ -67,22 +67,12 @@ class ReservationController extends Controller
             $previousReservations,
         );
 
-        // インポート日時選択肢用
         $importDates = Reservation::select('import_at')
             ->distinct()
             ->orderBy('import_at', 'desc')
             ->pluck('import_at');
 
-        // return view('index', array_merge($result, [
-        //     'latestImportAt' => $latestImportAt,
-        //     'previousImportAt' => $previousImportAt,
-        //     'latestReservations' => $latestReservations,
-        //     'importDates' => $importDates,
-        // ]));
-
         return response()->json([
-            'status' => 'success',
-            'message' => 'データの取得に成功しました。',
             'latestImportAt'     => $latestImportAt,
             'previousImportAt'   => $previousImportAt,
             'latestReservations' => $latestReservations->values(),

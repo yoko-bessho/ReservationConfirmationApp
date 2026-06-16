@@ -1,11 +1,11 @@
 import Table from './Table';
 
 export type ReservationRow = {
-    visitDate: string;
-    patientId: string;
-    patientName: string;
-    reservationContent: string;
-}
+    visit_date: string;
+    patient_id: string;
+    patient_name: string;
+    reservation_content: string;
+};
 
 type Props = {
     rows: ReservationRow[];
@@ -25,12 +25,12 @@ function ReservationList({ rows }: Props) {
             <tbody>
                 {rows.map((row) => (
                     <tr
-                        key={`${row.patientId}-${row.visitDate}-${row.reservationContent}`}
+                        key={`${row.patient_id}_${row.visit_date}_${row.reservation_content}`}
                     >
-                        <td>{row.visitDate}</td>
-                        <td>{row.patientId}</td>
-                        <td>{row.patientName}</td>
-                        <td>{row.reservationContent}</td>
+                        <td>{row.visit_date}</td>
+                        <td>{row.patient_id}</td>
+                        <td>{row.patient_name}</td>
+                        <td>{row.reservation_content}</td>
                     </tr>
                 ))}
             </tbody>

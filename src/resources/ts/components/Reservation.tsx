@@ -1,21 +1,90 @@
 import ReservationList, { type ReservationRow } from './ReservationList';
-
-const latestRows: ReservationRow[] = [
-    { visitDate: '2023/10/01', patientId: '00112233', patientName: '山田太郎', reservationContent: '定期検診' },
-];
-
-const addedRows: ReservationRow[] = [
-    { visitDate: '2023/10/01', patientId: '00112233', patientName: '山田太郎', reservationContent: '定期検診' },
-];
-
-const deletedRows: ReservationRow[] = [
-    { visitDate: '2023/11/11', patientId: '00223344', patientName: '山田二郎', reservationContent: 'インフルエンザ予防接種' },
-];
+import { useState, useEffect} from 'react';
 
 function Reservation() {
+    const [latestReservations, setLatestReservations]
+        = useState<ReservationRow[]>([]);
+
+    //(比較key, Reservation)の形で差分を管理。比較keyはvisitDate_patientId_reservationContentで生成している
+    const [addedDiffs, setAddedDiffs]
+        = useState<Record<string, ReservationRow>>({});
+
+    const [deletedDiffs, setDeletedDiffs]
+        = useState<Record<string, ReservationRow>>({});
+
+    const [previousImportAt, setPreviousImportAt]
+        = useState("");
+    
+    const [importDates, setImportDates]
+        = useState<string[]>([]);
+
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const controller = new AbortController();
+
+        const fetchData = async () => {
+            setLoading(true);
+            setError(null);
+
+            try {
+                const response = await fetch("/api/reservations", {
+                    signal: controller.signal,
+                });
+
+                if (!response.ok) {
+                    throw new Error(
+                        `HTTP errorです! status: ${response.status}`,
+                    );
+                }
+
+                const data = await response.json();
+
+                setLatestReservations(data.latestReservations);
+                setAddedDiffs(data.addedDiffs);
+                setDeletedDiffs(data.deletedDiffs);
+                setPreviousImportAt(data.previousImportAt);
+                setImportDates(data.importDates);
+            } catch (err) {
+                if (err instanceof DOMException && err.name === "AbortError") {
+                    return;
+                } else {
+                    setError(
+                        err instanceof Error
+                            ? err.message
+                            : "不明なエラーが発生しました",
+                    );
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+
+        return () => {
+            controller.abort();
+        };
+    }, []);
+
+    const latestRows: ReservationRow[] = latestReservations.map(
+        (reservation) => ({
+            visit_date: reservation.visit_date.slice(0, 10),
+            patient_id: reservation.patient_id,
+            patient_name: reservation.patient_name,
+            reservation_content: reservation.reservation_content,
+        }),
+    );
+
+    // 差分のオブジェクトのvalueを取り出して配列に変換
+    const addedRows: ReservationRow[] = Object.values(addedDiffs);
+    const deletedRows: ReservationRow[] = Object.values(deletedDiffs);
+
     return (
         <div className="container">
             <div className="section">
+                {loading && <p>データを読み込み中...</p>}
+                {error && <p style={{ color: "red" }}>{error}</p>}
                 <h2>予約一覧</h2>
                 <form>
                     <button className="button" type="submit">
