@@ -12,9 +12,11 @@ function Reservation() {
     const [deletedDiffs, setDeletedDiffs]
         = useState<Record<string, ReservationRow>>({});
 
-    const [previousImportAt, setPreviousImportAt]
-        = useState("");
-    
+    const [latestImportAt, setLatestImportAt]
+        = useState<string | null>(null);
+
+    const [previousImportAt, setPreviousImportAt] = useState<string | null>(null);
+
     const [importDates, setImportDates]
         = useState<string[]>([]);
 
@@ -41,6 +43,7 @@ function Reservation() {
 
                 const data = await response.json();
 
+                setLatestImportAt(data.latestImportAt);
                 setLatestReservations(data.latestReservations);
                 setAddedDiffs(data.addedDiffs);
                 setDeletedDiffs(data.deletedDiffs);
@@ -80,6 +83,20 @@ function Reservation() {
     const addedRows: ReservationRow[] = Object.values(addedDiffs);
     const deletedRows: ReservationRow[] = Object.values(deletedDiffs);
 
+    const toJST = (utcString: string | null): string => {
+        if (!utcString) return '';
+        return new Date(utcString).toLocaleString('ja-JP', {
+            timeZone: 'Asia/Tokyo',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            // hour: '2-digit',
+            // minute: '2-digit',
+        });
+    };
+
+    const latestImportDate: string = toJST(latestImportAt);
+
     return (
         <div className="container">
             <div className="section">
@@ -91,8 +108,8 @@ function Reservation() {
                         エクスポート
                     </button>
                 </form>
-                <h3>最新インポート日時：2023/XX/XX</h3>
-                <p>予約件数： X件</p>
+                <h3>最新インポート日時：{latestImportDate}</h3>
+                <p>予約件数： {latestReservations.length}件</p>
                 <ReservationList rows={latestRows} />
             </div>
             <div className="section">
@@ -101,9 +118,11 @@ function Reservation() {
                     <form>
                         <label>比較対象日選択</label>
                         <select className="select-box">
-                            <option value="2023/10/01">2023/10/01</option>
-                            <option value="2023/10/02">2023/10/02</option>
-                            <option value="2023/10/03">2023/10/03</option>
+                            {importDates.map((date) => (
+                                <option key={date} value={date}>
+                                    {toJST(date)}
+                                </option>
+                            ))}
                         </select>
                         <button className="button">予約変更状況チェック</button>
                     </form>
