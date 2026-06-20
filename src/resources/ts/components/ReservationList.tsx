@@ -5,13 +5,15 @@ export type ReservationRow = {
     patient_id: string;
     patient_name: string;
     reservation_content: string;
+    isHighlighted?: boolean;
 };
 
 type Props = {
     rows: ReservationRow[];
+    highlighted?: boolean;
 }
 
-function ReservationList({ rows }: Props) {
+function ReservationList({ rows, highlighted = false }: Props) {
     return (
         <Table>
             <thead>
@@ -26,6 +28,11 @@ function ReservationList({ rows }: Props) {
                 {rows.map((row) => (
                     <tr
                         key={`${row.patient_id}_${row.visit_date}_${row.reservation_content}`}
+                        className={
+                            highlighted || row.isHighlighted
+                                ? "added-highlighted"
+                                : ""
+                        }
                     >
                         <td>{row.visit_date}</td>
                         <td>{row.patient_id}</td>

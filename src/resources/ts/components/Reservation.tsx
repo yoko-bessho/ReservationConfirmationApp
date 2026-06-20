@@ -1,5 +1,5 @@
 import ReservationList, { type ReservationRow } from './ReservationList';
-import { useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 
 function Reservation() {
     const [latestReservations, setLatestReservations]
@@ -49,6 +49,9 @@ function Reservation() {
                 setDeletedDiffs(data.deletedDiffs);
                 setPreviousImportAt(data.previousImportAt);
                 setImportDates(data.importDates);
+                if (data.importDates.length > 0) {
+                    setPreviousImportAt(data.importDates[0]);
+                }
             } catch (err) {
                 if (err instanceof DOMException && err.name === "AbortError") {
                     return;
@@ -70,18 +73,31 @@ function Reservation() {
         };
     }, []);
 
-    const latestRows: ReservationRow[] = latestReservations.map(
-        (reservation) => ({
-            visit_date: reservation.visit_date.slice(0, 10),
-            patient_id: reservation.patient_id,
-            patient_name: reservation.patient_name,
-            reservation_content: reservation.reservation_content,
-        }),
-    );
+    const handleCheck = async (e: { preventDefault(): void }) => {
+        e.preventDefault();
+        if (!previousImportAt) return;
 
-    // 差分のオブジェクトのvalueを取り出して配列に変換
-    const addedRows: ReservationRow[] = Object.values(addedDiffs);
-    const deletedRows: ReservationRow[] = Object.values(deletedDiffs);
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(
+                `/api/reservations/check?from_import_at=${encodeURIComponent(previousImportAt)}`
+            );
+            if (!response.ok) {
+                throw new Error(`HTTP errorです! status: ${response.status}`);
+            }
+            const data = await response.json();
+            setAddedDiffs(data.addedDiffs);
+            setDeletedDiffs(data.deletedDiffs);
+            setPreviousImportAt(data.previousImportAt);
+        } catch (err) {
+            setError(
+                err instanceof Error ? err.message : '不明なエラーが発生しました'
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const toJST = (utcString: string | null): string => {
         if (!utcString) return '';
@@ -90,10 +106,24 @@ function Reservation() {
             year: 'numeric',
             month: '2-digit',
             day: '2-digit',
-            // hour: '2-digit',
-            // minute: '2-digit',
         });
     };
+
+    const toRow = (reservation: ReservationRow): ReservationRow => ({
+        visit_date: toJST(reservation.visit_date),
+        patient_id: reservation.patient_id,
+        patient_name: reservation.patient_name,
+        reservation_content: reservation.reservation_content,
+    });
+
+    const addedKeys = new Set(Object.keys(addedDiffs));
+
+    const latestRows = latestReservations.map(r => ({
+        ...toRow(r),
+        isHighlighted: addedKeys.has(`${r.visit_date.slice(0, 10)}_${r.patient_id}_${r.reservation_content}`),
+    }));
+    const addedRows = Object.values(addedDiffs).map(toRow);
+    const deletedRows = Object.values(deletedDiffs).map(toRow);
 
     const latestImportDate: string = toJST(latestImportAt);
 
@@ -110,21 +140,31 @@ function Reservation() {
                 </form>
                 <h3>最新インポート日時：{latestImportDate}</h3>
                 <p>予約件数： {latestReservations.length}件</p>
-                <ReservationList rows={latestRows} />
+                <ReservationList rows={latestRows}/>
             </div>
             <div className="section">
                 <div>
                     <h3>予約変更状況確認はこちら</h3>
-                    <form>
-                        <label>比較対象日選択</label>
-                        <select className="select-box">
-                            {importDates.map((date) => (
-                                <option key={date} value={date}>
-                                    {toJST(date)}
-                                </option>
-                            ))}
-                        </select>
-                        <button className="button">予約変更状況チェック</button>
+                    <form onSubmit={handleCheck}>
+                        <label>
+                            比較対象日選択
+                            <select
+                                className="select-box"
+                                value={previousImportAt ?? ""}
+                                onChange={(e) =>
+                                    setPreviousImportAt(e.target.value)
+                                }
+                            >
+                                {importDates.map((date) => (
+                                    <option key={date} value={date}>
+                                        {toJST(date)}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                        <button className="button" type="submit">
+                            予約変更状況チェック
+                        </button>
                     </form>
                 </div>
                 <div className="diff-list">

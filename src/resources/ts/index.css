@@ -27,6 +27,10 @@ Table {
     padding: 8px;
     font-size: 16px;
 }
+.added-highlighted {
+    background-color: #d4edda;
+}
+
 .button {
     padding: 8px 20px;
     background-color: #3ca3f7;

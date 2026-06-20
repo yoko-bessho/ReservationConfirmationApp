@@ -28,7 +28,7 @@ class ReservationDiffService
     private function keyByReservation(Collection $reservations): Collection
     {
         return $reservations->keyBy(fn ($r) =>
-            $r->visit_date . '_' . $r->patient_id . '_' . $r->reservation_content
+            $r->visit_date->utc()->format('Y-m-d') . '_' . $r->patient_id . '_' . $r->reservation_content
         );
     }
 }

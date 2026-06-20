@@ -9,6 +9,8 @@ use App\Exports\ReservationExport;
 use App\Models\Reservation;
 use App\Services\ReservationDiffService;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\DB;
+
 use Symfony\Component\Console\Input\Input;
 
 class ReservationController extends Controller
@@ -67,7 +69,8 @@ class ReservationController extends Controller
             $previousReservations,
         );
 
-        $importDates = Reservation::select('import_at')
+        $importDates = DB::table('reservations')
+            ->where('import_at', '<', $latestImportAt->format('Y-m-d H:i:s'))
             ->distinct()
             ->orderBy('import_at', 'desc')
             ->pluck('import_at');
@@ -96,17 +99,20 @@ class ReservationController extends Controller
             $previousReservations,
         );
 
-        $importDates = Reservation::where('import_at', '<', $latestImportAt)
+        $importDates = DB::table('reservations')
+            ->where('import_at', '<', $latestImportAt->format('Y-m-d H:i:s'))
             ->distinct()
             ->orderBy('import_at', 'desc')
             ->pluck('import_at');
 
-            return view('index', array_merge($result, [
-            'importDates'      => $importDates,
-            'latestImportAt' => $latestImportAt,
-            'latestReservations' => $latestReservations,
-            'previousImportAt' => $previousImportAt,
-        ]));
+        return response()->json([
+            'latestImportAt'     => $latestImportAt,
+            'previousImportAt'   => $previousImportAt,
+            'latestReservations' => $latestReservations->values(),
+            'importDates'        => $importDates->values(),
+            'addedDiffs'         => (object) $result['addedDiffs']->toArray(),
+            'deletedDiffs'       => (object) $result['deletedDiffs']->toArray(),
+        ], 200, [], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
 
     public function export(Request $request, ReservationDiffService $diffService)
